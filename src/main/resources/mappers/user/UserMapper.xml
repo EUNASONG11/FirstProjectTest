@@ -32,7 +32,22 @@
         , upw = #{upw}
         , nick_name = #{nickName}
         , pic = #{pic}
+        INSERT INTO email_verification
+           SET user_id = #{userId}
+             , token = #{token}
+             , expired_date = #{expiredDate}
     </insert>
+
+    <select id="selEmailVerification"> <!-- select 했을 때 1이 넘어오면 인증 완료 -->
+        SELECT user_id
+          FROM email_verification
+         WHERE user_id = #{userId}
+    </select>
+
+    <delete id="delEmailVerification"> <!-- select 완료 후 삭제 -->
+        DELETE FROM email_verification
+         WHERE user_id = #{userId}
+    </delete>
 
 
 <!--로그인-->

@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @Getter
 @Setter
@@ -32,5 +34,9 @@ public class UserSignUpReq {
 
     @Schema(title = "프로필사진")
     private String pic;
+
+    // ---------------
+    private String token;
+    private LocalDateTime expiredDate;
 
 }

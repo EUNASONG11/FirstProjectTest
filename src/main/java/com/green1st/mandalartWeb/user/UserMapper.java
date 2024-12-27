@@ -11,6 +11,8 @@ public interface UserMapper {
     UserUpdateRes checkPassWord(String userId);
     //회원가입
     int insUser(UserSignUpReq p);
+
+
     //로그인
     UserSignInRes selUser(UserSignInReq p);
     //정보조회
