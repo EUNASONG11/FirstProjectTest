@@ -2,7 +2,9 @@ package com.green1st.mandalartWeb.user;
 
 import com.green1st.mandalartWeb.common.MyFileUtils;
 import com.green1st.mandalartWeb.user.model.*;
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +81,19 @@ public class UserService {
         p.setPic(savedPicName);
         p.setUpw(hashedPassWord);
 
+        // ----------------
+        char[] charSet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+
+        StringBuilder token = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            int idx = (int) (charSet.length * Math.random());
+            token.append(charSet[idx]);
+        }
+
+        p.setToken(token.toString());
+
+
         int result = userMapper.insUser(p);
         if(pic == null){
             userMessage.setMessage("회원가입이 완료되었습니다.");
@@ -96,6 +111,23 @@ public class UserService {
             e.printStackTrace();
         }
         userMessage.setMessage("회원가입이 완료되었습니다.");
+
+        if (result == 1) {
+            MimeMessage mail = javaMailSender.createMimeMessage();
+            String mailContent = "<h1>[이메일 인증]</h1><br><p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>"
+                    + "<a href='http://localhost:8080/api/user/signUpConfirm?email="
+                    + userId + "&authKey=" + token + "' target='_blenk'>이메일 인증 확인</a>";
+
+            try {
+                mail.setSubject("회원가입 이메일 인증 ", "utf-8");
+                mail.setText(mailContent, "utf-8", "html");
+                mail.addRecipient(Message.RecipientType.TO, new InternetAddress(userId));
+                javaMailSender.send(mail);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
+
         return result;
 
     }
